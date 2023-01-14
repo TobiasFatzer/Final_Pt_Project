@@ -231,6 +231,28 @@ app.get('/api/sektion/:id', async (req, res) => {
     }
 })
 //--------------------------------------------------------------------------------------------------
+// Get a Sektion by their Name
+//--------------------------------------------------------------------------------------------------
+app.get('/api/sektion/getSektionIdByName/:name', async (req, res) => {
+    // read the path parameter :name
+    let name = req.params.name;
+    try {
+        const collection = database.collection('sektion');
+        const query = {name: String(name)}; // filter by name
+        const result = await collection.findOne(query);
+        if (!result) {
+            let responseBody = {
+                status: "No Sektion with Name " + name
+            }
+            res.status(404).send(responseBody);
+        } else {
+            res.send(result);
+        }
+    } catch (error) {
+        res.status(500).send({error: error.message});
+    }
+})
+//--------------------------------------------------------------------------------------------------
 // Update an existing Sektion
 //--------------------------------------------------------------------------------------------------
 app.put('/api/sektion/:id', async (req, res) => {

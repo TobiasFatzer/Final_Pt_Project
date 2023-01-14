@@ -11,14 +11,29 @@
         sektion_id: "",
         comps: [],
     };
+
+    let section_name = "";
+
     let section = {
+        id: "",
         name: ""
     }
 
     let sections = [];
 
+    function getSectionByName(name) {
+        axios.get("http://localhost:3001/api/sektion/getSektionIdByName/" + name)
+            .then((response) => {
+                member.sektion_id = response.data.id
+                console.log(member.sektion_id)
+            })
+            .catch((error) => {
+                console.log(error);
+                alert(error);
+            });
+    }
+
     function addMember() {
-        member.sektion_id = section.name
         axios.post("http://localhost:3001/api/mitglieder", member)
             .then((response) => {
                 window.location.assign('#/members');
@@ -86,9 +101,9 @@
         <div class="row">
             <div class="mb-3 col-6">
                 <label for="" class="form-label">Sektionen</label>
-                <select class="form-select">
+                <select class="form-select" bind:value={section_name} on:change={getSectionByName(section_name)}>
                     {#each sections as section}
-                        <option value="{section.id}">{section.name}</option>
+                        <option>{section.name}</option>
                     {/each}
                 </select>
             </div>
