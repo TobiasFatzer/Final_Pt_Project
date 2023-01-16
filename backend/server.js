@@ -128,6 +128,7 @@ app.put('/api/mitglieder/:id', async (req, res) => {
     // read the path parameter :id
     let id = req.params.id;
     let mitglieder = req.body;
+    delete mitglieder._id; // delete the _id from the object, because the _id cannot be updated
     try {
         const collection = database.collection('mitglieder');
         const query = {id: Number(id)}; // filter by id
@@ -184,6 +185,7 @@ app.post('/api/mitglieder', async (req, res) => {
             geburtsdatum: req.body.geburtsdatum,
             geschlecht: req.body.geschlecht,
             sektion_id: req.body.sektion_id,
+            comps: req.body.comps
         };
         const result = await collection.insertOne(mitglieder);
         res.status(201).send({_id: result.insertedId});
@@ -323,6 +325,30 @@ app.post('/api/sektion', async (req, res) => {
     }
 })
 //--------------------------------------------------------------------------------------------------
+// Get Actual Values of comp
+//--------------------------------------------------------------------------------------------------
+app.get('/api/comp', async (req, res) => {
+        try {
+            mysql_connection.query('SELECT sasse_wettkampf.von as date, COUNT(st.startnummer) as amount \nFROM sasse_wettkampf\nJOIN sasse_disziplin sd ON sasse_wettkampf.id = sd.wettkampf_id\nJOIN sasse_teilnehmer st ON sd.id = st.disziplin_id\nGROUP BY sasse_wettkampf.von;',
+                (err, rows, fields) => {
+                    if (err) {
+                        console.error(err);
+                        return;
+                    }
+                    console.log(rows);
+                    res.send(rows);
+
+                });
+        } catch
+            (error) {
+            res.status(500).send({error: error.message});
+        }
+    }
+)
+
+//--------------------------------------------------------------------------------------------------
 // Start the server
 //--------------------------------------------------------------------------------------------------
 server.listen(port, () => console.log("app listening on port " + port));
+
+

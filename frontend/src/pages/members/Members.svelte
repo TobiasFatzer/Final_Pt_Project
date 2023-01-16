@@ -5,6 +5,7 @@
     let loading = false;
     let error
     null;
+    let amountOfComps = 0;
 
     async function getMembers() {
         try {
