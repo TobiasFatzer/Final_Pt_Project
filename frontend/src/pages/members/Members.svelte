@@ -6,6 +6,7 @@
     let error
     null;
     let amountOfComps = 0;
+    let filteredData = [];
 
     async function getMembers() {
         try {
@@ -13,6 +14,7 @@
             loading = true;
             await axios.get("http://localhost:3001/api/mitglieder").then((response) => {
                 members = response.data;
+                filteredData = members;
             });
         } catch (err) {
             error = err;
@@ -42,23 +44,41 @@
     }
 
     getMembers();
+
+
+    let searchTerm = "";
+
+    function handleSearch() {
+        if (searchTerm.length > 3) {
+            filteredData = members.filter(item => {
+                return item.name.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1;
+            });
+        } else {
+            filteredData = members;
+        }
+    }
+
 </script>
 
 <div class="mb-5">
     <!--TODO Make nice-->
 
     <div class="row">
-        <h1 class="col-11">List of all Members</h1>
+        <h1 class="col-6">List of all Members</h1>
+        <input class="col-5 form-label" style="margin-right: 12px;" type="text" bind:value={searchTerm}
+               on:input={handleSearch}
+               placeholder="Search...">
         <button class="btn btn-primary button-round col-1" style="border-radius: 75%" on:click={openLink}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus"
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus"
                  viewBox="0 0 16 16">
                 <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
             </svg>
         </button>
     </div>
     {#if loading}
-        <div style="display: grid; place-items: center;">
+        <div style="display: grid; place-items: center; margin-top: 32px;">
             <img src="images/loading.gif" alt="Loading..."/>
+            <h1>Loading...</h1>
         </div>
     {:else if error}
         <div>An error occurred: {error.message}</div>
@@ -75,7 +95,7 @@
             </tr>
             </thead>
             <tbody>
-            {#each members as member}
+            {#each filteredData as member}
                 <tr>
                     <td>
                         {member.id}

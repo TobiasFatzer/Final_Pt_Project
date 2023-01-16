@@ -18,13 +18,108 @@
         }
     }
 
+    function deleteSectionWithNoMercy(id) {
+
+        axios
+            .delete("http://localhost:3001/api/sektion/" + id)
+            .then((response) => {
+                alert("Sektion deleted");
+                closeModal();
+            })
+            .catch((error) => {
+                console.log(error);
+                alert(error);
+            });
+
+    }
+
+    function deleteSection(id) {
+        axios
+            .get("http://localhost:3001/api/mitglieder/sektionId/" + id)
+            .then((response) => {
+                console.log(response.data)
+                if (response.data.length > 0) {
+                    openDeleteModal(id, response.data);
+                } else {
+                    axios
+                        .delete("http://localhost:3001/api/sektion/" + id)
+                        .then((response) => {
+                            alert("Sektion deleted");
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            alert(error);
+                        });
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+
+
     //TODO Section as Modal
     function openLink() {
         window.open('#/addSection');
     }
 
+    let deleteModalRef;
+    let connectedMembers = []
+    let sektionId;
+
+    function openDeleteModal(id, members) {
+        deleteModalRef.classList.add("show");
+        deleteModalRef.setAttribute("aria-modal", true);
+        deleteModalRef.style.display = "block";
+        connectedMembers = members
+        sektionId = id;
+    }
+
+    function closeModal() {
+        deleteModalRef.classList.remove("show");
+        deleteModalRef.removeAttribute("aria-modal");
+        deleteModalRef.style.display = "none";
+        connectedMembers = []
+        sektionId = 0
+    }
+
+
     getSections();
+
+
 </script>
+<div class="modal" tabindex="-1" role="dialog" bind:this={deleteModalRef}>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Verknüpfte Nutzer für Sektion {sektionId}</h5>
+                <button type="button" on:click={closeModal} class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3 card-template">
+                    {#each connectedMembers as member}
+                        <div class="card">
+                            <div class="card-body">
+                                {member.id}
+                                {member.vorname}
+                                {member.name}
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" on:click={closeModal} data-dismiss="modal">Close
+                </button>
+                <button type="button" class="btn btn-primary" on:click={deleteSectionWithNoMercy(sektionId)}>Trotzdem
+                    Löschen
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="mb-5">
     <!--TODO Make nice-->
@@ -49,6 +144,7 @@
                         <h5 class="card-title">{section.name}</h5>
                         <p class="card-text">{section.id}</p>
                         <a href={"#/sections/" + section.id} class="btn btn-primary">Edit</a>
+                        <a on:click={deleteSection(section.id)} class="btn" style="background-color: red;">Delete</a>
                     </div>
                 </div>
             {/each}

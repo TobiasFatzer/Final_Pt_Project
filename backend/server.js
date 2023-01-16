@@ -122,6 +122,21 @@ app.get('/api/mitglieder/:id', async (req, res) => {
     }
 })
 //--------------------------------------------------------------------------------------------------
+// Get a Mitglieder by their id
+//--------------------------------------------------------------------------------------------------
+app.get('/api/mitglieder/sektionId/:sectionId', async (req, res) => {
+    // read the path parameter :id
+    let sectionId = req.params.sectionId;
+    try {
+        const collection = database.collection('mitglieder');
+        const query = {sektion_id: Number(sectionId)}; // filter by id
+        const result = await collection.find(query).toArray();
+        res.send(result);
+    } catch (error) {
+        res.status(500).send({error: error.message});
+    }
+})
+//--------------------------------------------------------------------------------------------------
 // Update an existing Mitglieder
 //--------------------------------------------------------------------------------------------------
 app.put('/api/mitglieder/:id', async (req, res) => {

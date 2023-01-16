@@ -166,6 +166,10 @@
         <input class="form-control" type="number" bind:value={member.nummer}/>
     </div>
     <div class="mb-3">
+        <label for="" class="form-label">Sektion Id</label>
+        <input class="form-control" type="number" bind:value={member.sektion_id}/>
+    </div>
+    <div class="mb-3">
         <label for="" class="form-label">Geburtstag</label>
         <input
                 class="form-control"

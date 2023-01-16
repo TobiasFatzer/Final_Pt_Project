@@ -10,7 +10,7 @@
         // This block of is executed whenever the value of a variable in it changes.
         // See https://svelte.dev/tutorial/reactive-statements
         id = params.id;
-        getMember();
+        getSection();
     }
 
     let section = {
@@ -19,7 +19,7 @@
         nummer: ""
     };
 
-    function getMember() {
+    function getSection() {
         axios.get("http://localhost:3001/api/sektion/" + id).then((response) => {
             section = response.data;
         });
